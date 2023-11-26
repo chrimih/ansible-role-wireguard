@@ -20,6 +20,17 @@
   tags:
     - wg-install
 
+- name: Set up prerequisites
+  ansible.builtin.include_tasks:
+    file: "{{ item }}"
+    apply:
+      tags:
+        - wg-install
+  with_items:
+    - "prerequisites.yml"
+  tags:
+    - wg-install
+
 - name: Enable WireGuard kernel module
   community.general.modprobe:
     name: wireguard

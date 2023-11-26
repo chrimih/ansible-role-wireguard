@@ -1,0 +1,36 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Install Python nettools
+  delegate_to: localhost
+  run_once: true
+  apt:
+    name: python3-netaddr
+    install_recommends: no
+
+- name: Allow ingoing wireguard port 
+  community.general.ufw:
+    rule: allow
+    # from_ip: "{{ item.0 }}"
+    to_port: "{{ wireguard_port }}"
+    proto: udp
+    comment: ansible managed
+  # loop: "{{ sshd_admin_net | product(sshd_ports) | list }}"
+  tags:
+    - ufw
+
+- name: Allow outgoing wireguard port
+  community.general.ufw:
+    rule: allow
+    direction: out
+    to_port: "{{ wireguard_port }}"
+    proto: udp
+    comment: ansible managed
+  # loop: "{{ ufw_outgoing_traffic }}"
+  tags:
+    - ufw
+
+- name: Enable ipv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
